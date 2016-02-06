@@ -103,9 +103,11 @@ base paket dizinine girilir.
  
  ./lfs-mekanizma -bs
 
- pisi paketçinin derlenmesi
+ PAKETÇİ ENTEGRESİ
+ 
+ A-pisi paketçisi için
 
- paketçi derlenmesi yapmak için ikincil ayarlar çalıştırılır.
+ ikincil ayarlar çalıştırılır.
 
  ./lfs-mekanizma -ia
 
@@ -137,7 +139,7 @@ base paket dizinine girilir.
 
  tar xf kaynak_kod
  
- cd kymak_kod
+ cd kaynak_kod
  
  python setup.py install
 
