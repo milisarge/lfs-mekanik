@@ -17,9 +17,7 @@ Lfs Yönergeleri Doğrultusunda Dağıtım Oluşturma Mekanizması
  
  ./lfs-mekanizma -ba
 
- lfs kullanıcısıyla oturum acılmış olur..
-
-chroot derlenmeye baslanır.
+ lfs kullanıcısıyla oturum acılmış olur.chroot derlenmeye baslanır.
 
  cd lfs-mekanik 
  
