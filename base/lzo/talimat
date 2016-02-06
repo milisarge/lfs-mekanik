@@ -1,0 +1,18 @@
+# Description: LZO is a data compression library which is suitable for data decompression and compression in real-time. This means it favors speed over compression ratio. LZO is written in ANSI C. Both the source code and the compressed data format are designed to be portable across platforms.
+# URL: http://www.oberhumer.com/opensource/lzo
+# Maintainer: Markus F.X.J. Oberhumer
+# Packagers: pierre at nutyx dot org, tnut at nutyx dot org
+name=lzo
+version=2.09
+release=1
+
+source=(  http://www.oberhumer.com/opensource/$name/download/$name-$version.tar.gz)
+
+build() {
+ cd $name-$version
+ ./configure --prefix=/usr \
+ --enable-shared \
+ --docdir=/usr/share/doc/lzo-$version
+ make
+ make DESTDIR=$PKG install
+}

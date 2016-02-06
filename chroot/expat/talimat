@@ -1,0 +1,10 @@
+name=expat
+version=2.1.0
+source=(http://downloads.sourceforge.net/expat/expat-$version.tar.gz)
+build()
+{
+cd $name-$version
+./configure --prefix=/tools --disable-static &&
+make
+make install
+}

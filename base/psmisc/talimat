@@ -1,0 +1,17 @@
+# Description: This PSmisc package is a set of some small useful utilities that use the proc filesystem. We're not about changing the world, but providing the system administrator with some help in common tasks.
+# URL: http://psmisc.sourceforge.net/
+# Maintainers: Werner Almesberger werner at almesberger dot net,Craig Small csmall at small dot dropbear dot id dot au,Trent Waddington trent dot waddington @ gmail dot com
+# Packager: tnut at nutyx dot org
+name=psmisc
+version=22.21
+release=1
+
+source=(http://prdownloads.sourceforge.net/psmisc/psmisc-$version.tar.gz)
+
+build()
+{
+cd psmisc-$version
+./configure --prefix=/usr --libdir=/lib --bindir=/bin
+make
+make DESTDIR=$PKG install
+}

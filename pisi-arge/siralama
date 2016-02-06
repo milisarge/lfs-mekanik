@@ -1,0 +1,18 @@
+#base
+python
+perl xml::parser
+inttool
+#python modulleri
+setuptools
+pyliblzma
+pycurl
+piksemel
+magic
+urlgrabber
+catbox
+pisi
+
+#core sira
+libunistring
+
+

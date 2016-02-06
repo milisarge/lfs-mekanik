@@ -1,0 +1,53 @@
+# Description: The Binutils package contains a linker, an assembler, and other tools for handling object files.
+# URL: http://sources.redhat.com/binutils/
+# Maintainers: Tristan Gingold ( gingold at adacore dot com ),Alan Modra ( amodra at bigpond dot net dot au )
+# Packager: tnut at nutyx dot org
+name=binutils
+version=2.25.1
+release=1
+
+source=(http://ftp.gnu.org/gnu/binutils/binutils-$version.tar.bz2)
+build()
+{
+cd binutils-$version
+
+mkdir -v ../binutils-build
+cd ../binutils-build
+
+
+../binutils-$version/configure \
+--prefix=/usr --includedir=/usr/include \
+--bindir=/bin --sbindir=/sbin \
+--datarootdir=/usr/share \
+--enable-shared --disable-werror
+
+make tooldir=/
+
+# make  LDFLAGS="" -k check || true
+
+# make tooldir=/usr DESTDIR=$PKG install
+make tooldir=/usr DESTDIR=$PKG install
+
+cp -v ../binutils-$version/include/libiberty.h $PKG/usr/include
+rm -rf $PKG/usr/share/info/dir
+mkdir $PKG/lib
+for lib in libopcodes libbfd
+do
+	mv $PKG/usr/lib/$lib-$version.so \
+	$PKG/lib/$lib-$version.so
+	ln -s $lib-$version.so  $PKG/lib/$lib
+	ln -s ../../lib/$lib-$version.so \
+	$PKG/usr/lib/$lib-$version.so
+	ln -s ../../lib/$lib-$version.so \
+	$PKG/usr/lib/$lib
+done
+}
+devel()
+{
+cd $PKG
+bsdtar -r -f \
+$PKGMK_PACKAGE_DIR/${name}.${group}${PKGMK_BUILDVER}`uname -m`.$PKGMK_PACKAGE_EXT \
+usr/include usr/lib/ldscripts
+rm -r usr/include \
+usr/lib/ldscripts
+}

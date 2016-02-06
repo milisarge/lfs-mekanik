@@ -1,0 +1,347 @@
+#!/bin/bash
+VERSION="1.0"
+proje_dizin="lfs-mekanik"
+kaynak_url="http://downloads.nutyx.org/current/sources"
+CHROOT_DERLEME_SIRASI="chroot.list"
+BASE_DERLEME_SIRASI="base.list"
+
+
+birinci_ayarlar(){
+		lfs_kontrol
+		#lfs dizinin olusturulması
+		mkdir -p /mnt/lfs
+		#lfs kullanici-grup silme sıfırlama
+		userdel lfs
+		rm -r /home/lfs
+		groupdel lfs
+		#lfs kullanici-grup olusturma
+		groupadd lfs
+		useradd -s /bin/bash -g lfs -m -k /dev/null lfs
+		passwd lfs
+		#lfs icin gerekli dizin ve izinlerinin olusturulması
+		mkdir -vp $LFS/{sources,tools}
+		ln -svf $LFS/tools /
+		ln -svf $LFS/sources /
+		chown -v lfs $LFS/{tools,sources}
+		chmod -v a+wt $LFS/sources
+		chown -v lfs $LFS
+		cp -a ../$proje_dizin/* /home/lfs/
+		chown -R lfs:lfs /home/lfs/
+		cp ayarlar/.bashrc /home/lfs/
+		cp ayarlar/.bash_profile /home/lfs/
+			
+		su - lfs
+}
+
+chroot_derle(){
+	#dongu icerisinde talimatların derlenmesi
+	paketci="mpsd"
+	for DIR in `cat $CHROOT_DERLEME_SIRASI`
+	do
+		talimat=`basename $DIR`
+		derleme="evet"
+		if [ -f ./chroot/.log/$talimat.log ]; then
+		  if ( grep "^=======>" ./chroot/.log/$talimat.log|grep "basarili"  > /dev/null);then
+			 derleme="hayir"
+		  else
+			 derleme="evet"
+		  fi
+		fi
+		if [ "$derleme" == "evet" ]; then
+			cd ./chroot/$DIR
+			touch ../.log/$talimat.log
+			$paketci -d -cf ../../bin/paketci.conf -kw 2>&1|tee ../.log/$talimat.log || exit 1
+		fi
+		if ( grep "^=======>" ../.log/$talimat.log| tail -1 |grep "ERROR"  > /dev/null);then
+			exit 1
+		fi
+		cd -
+	done
+}
+
+ikinci_ayarlar(){
+	lfs_kontrol
+	unmount_islemi
+	mv /mnt/sources_depo /mnt/lfs/sources 
+	chown -R root:root $LFS
+	install -dv -m0750  $LFS/root
+	rm -r $LFS/root/bin
+	rm -r $LFS/root/base
+	rm -r $LFS/root/logs
+	cp -a bin $LFS/root/
+	cp -a base $LFS/root/
+	cd $LFS/root/base/nutyx
+	cp ../../bin/mpsd $LFS/tools/bin
+	cp ../../bin/mpsd.conf $LFS/etc/
+	cp ../../ayarlar/.bash_history $LFS/root/
+	/tools/bin/mpsd -cf ../../bin/mpsd.conf
+	/tools/bin/pkgadd -r $LFS nutyx1*
+	/tools/bin/pkgadd -r $LFS nutyx.man1*
+	/tools/bin/pkginfo -r $LFS -i
+	bash $LFS/root/bin/install-houaphan -ic
+}
+
+
+mount_islemi(){
+	cp -v /etc/resolv.conf $LFS/etc
+	mount -v -B /dev $LFS/dev
+	#mount -vt devpts devpts $LFS/dev/pts
+	mount --bind /dev/pts "$LFS/dev/pts"
+	mount -vt proc proc $LFS/proc
+	mount -vt sysfs sysfs $LFS/sys
+	if [ -h /dev/shm ]; then rm -f $LFS/dev/shm;mkdir $LFS/dev/shm;fi
+	mount -vt tmpfs shm $LFS/dev/shm
+	chmod 1777 /dev/shm
+}
+
+chroot_gir(){
+lfs_kontrol
+unmount_islemi
+mount_islemi
+chroot "$LFS" /usr/bin/env -i HOME=/root TERM="$TERM" PS1='\u:\w\$ ' /bin/bash --login +h 
+}
+
+
+unmount_islemi() {
+	umount $LFS/dev/shm
+	umount $LFS/run
+	umount $LFS/dev/pts
+	umount $LFS/dev
+	umount $LFS/proc
+	umount $LFS/sys
+}
+
+base_derle(){
+ echo "yapim asamasında"
+}
+
+bash_kur(){
+	cd $LFS/root/base/bash
+	for PACK in *.xz; do /tools/bin/pkgadd -r $LFS $PACK;done
+	#kuruldugunu gormek icin
+	/tools/bin/pkginfo -r $LFS -i|grep bash
+}
+
+chroot_sfs(){
+	tarih=`date +%Y-%m-%d`
+	mv /mnt/lfs/sources /mnt/sources_depo
+	mksquashfs /mnt/lfs lfs-asama1-chroot_$tarih.sfs -comp xz
+}	
+
+base_sfs(){
+	tarih=`date +%Y-%m-%d`
+	mv /mnt/lfs/sources /mnt/sources_depo
+	mv /mnt/lfs/paket_depo /mnt/paket_depo
+	mksquashfs /mnt/lfs lfs-asama2-base_$tarih.sfs -comp xz
+	mv /mnt/sources_depo /mnt/lfs/sources
+}
+
+temizlik(){
+	rm -r /tools/*
+	rm -r chroot/.log/*
+	rm -r /tmp/work
+}
+
+lfs_kontrol(){
+	if [ -z "${LFS}" ]; then
+		echo "export LFS=/mnt/lfs"
+		echo "komutu verilmeli"
+		exit 1
+	fi
+}
+#calisma ortaminin klonlanmasi
+
+git_clone(){
+	git clone git://github.com/milisarge/lfs-mekanik lfs-mekanik
+
+}
+
+kaynak_kodlar_indir(){
+	lfs_kontrol
+	for i in `cat kaynaklar.liste|grep -v ^#|sed "s@  @|@"`
+	do
+		FILE=`echo $i|cut -d "|" -f2`
+		MD5SUM=`echo $i|cut -d "|" -f1`
+		if [ ! -f $LFS/sources/$FILE ]; then
+			wget --no-check-certificate $kaynak_url/$FILE -P $LFS/sources
+		fi
+		if [ "$MD5SUM" != "skip" ]; then
+			echo "$MD5SUM  $FILE" >> $LFS/sources/.md5sums
+		fi
+	done
+}
+
+
+parametre_analiz() {
+	while [ "$1" ]; do
+		case $1 in
+			-h|--help)
+				print_help
+				exit 0;;
+			-ki|--kaynak-indir)
+				kaynak_kodlar_indir
+				exit 0;;
+			-cd|--chroot-derle)
+				chroot_derle
+				exit 0;;
+			-cg|--chroot-gir)
+				chroot_gir
+				exit 0;;
+			-cs|--chroot-sfs)
+				chroot_sfs
+				exit 0;;
+			-bs|--base-sfs)
+				base_sfs
+				exit 0;;
+			-ba|--birinci-ayarlar)
+				birinci_ayarlar
+				exit 0;;
+			-ia|--ikinci-ayarlar)
+				ikinci_ayarlar
+				exit 0;;
+			-mi|--mount-islemi)
+				mount_islemi
+				exit 0;;
+			-bk|--bash-kur)
+				bash_kur
+				exit 0;;
+			-ui|--unmount-islemi)
+				unmount_islemi
+				exit 0;;
+			-te|--temizlik)
+				temizlik
+				exit 0;;
+			-p|--path)
+				if [ ! "$2" ]; then
+					echo "`basename $INSTALL_COMMAND`: option $1 requires an argument"
+					exit 1
+				fi
+				FOLDER="$2"
+				shift;;
+			-v|--version)
+				echo "`basename $0` $VERSION"
+				exit 0;;
+			*)
+				echo "`basename $0`: gecersiz parametre $1"
+				exit 1 ;;
+		esac
+		shift
+	done
+}
+
+parametre_analiz "$@"
+
+#notlar
+#http://downloads.nutyx.org/files/patchs/openssh-server/service-saravane-01.patch  eksik bu indirmek gerek
+
+#yonergeler:
+
+# cd lfs-mekanik
+# export LFS=/mnt/lfs
+
+# gerekli kaynak kodların indirilmesi 
+# ./lfs-mekanizma -ki
+
+# birinci ayarlar yapılır.
+# ./lfs-mekanizma -ba
+
+# lfs kullanıcısıyla oturum acılmış olur..
+
+#chroot derlenmeye baslanır.
+# cd lfs-mekanik
+# ./lfs-mekanizma -cd
+
+# =======>  '/home/lfs/lfs-mekanik/chroot/cards/Pkgfile' derleme basarili 
+# yukarıdaki ifade goruldukten sonra exit komutu ile lfs kullanıcısından çıkılır.
+
+#lfs tools uretici sistemin sıkıstırılması(yedeklemek için)
+# ./lfs-mekanizma -cs
+
+#üretici sistemin yedeklenmesinden sonra üretici sisteme girmek için gerekli ayarlar yapılır.
+
+# ./lfs-mekanizma -ia
+
+# üretici sisteme girilir.
+
+# ./lfs-mekanizma -cg
+
+# root [ / ]#   ekranına dusulur.
+
+#uretici sistem içersindeyken gerekli exportlar yapılır.
+
+# export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/root/bin
+# export FORCE_UNSAFE_CONFIGURE=1
+
+# cd /root/base 
+
+#base paket dizinine girilir.
+
+# base_derle
+
+# komutu verilip base sistemin kurulumu sağlanır.
+
+# "bash chroot dışına çıkıp elle kurulmalıdır."  yazısı görülünce
+# "exit" ile chroot dışına çıkılır
+
+# ./lfs-mekanizma -bk
+
+# komutu verilir.işlem aşagıdaki şekilde sonlanmalıdır.
+# bash 4.3.30-3
+# bash.tr 4.3.30-3
+
+# tekrar chroot içine girilir.ortam değişkenleri ayarlandıktan sonra,base derlenmeye devam edilir.
+
+# ./lfs-mekanizma -cg
+# export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/root/bin
+# export FORCE_UNSAFE_CONFIGURE=1
+# cd /root/base
+# base_derle 
+
+# enson bu bilgi ile derleme bitmelidir.
+# =======> Installing 'ca-certificates1454658816x86_64.mps' succeeded.
+# =======> compress ca-certificates1454658816x86_64.mps
+
+# base paketlerin paket_depo altında toplanması
+
+# paketlerin arsivlenmesi
+
+# paketleri_arsivle
+
+# chroottan cıkılıp,base sistemin yedegi alınır.
+
+# exit 
+# ./lfs-mekanizma -ui
+# ./lfs-mekanizma -bs
+
+# pisi paketçinin derlenmesi
+
+# derleme yapmak için ikincil ayarlar çalıştırılır.
+
+# ./lfs-mekanizma -ia
+
+# sisteme girmek için
+
+# ./lfs-mekanizma -cg
+
+# python derleme
+
+# cd /root/base/python && omps
+
+# perl modulu XML-parser kurulumu
+# cpan shelline girilir
+
+# cpan
+
+# shellde bu komutla kurulur.sorular enterla geçilir.
+
+# install XML::Parser
+# /usr/bin/make install  -- OK  ifadesini görülürse kurulum tamamdır.exit le shellden cıkılır.
+
+# intltool kurulumu
+
+# cd /root/base/intltool && omps
+
+# daha sonra pisi-arge icindeki siralamadaki python modulleri kurulur.
+
+
+
