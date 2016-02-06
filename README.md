@@ -3,6 +3,8 @@ Lfs Yönergeleri Doğrultusunda Dağıtım Oluşturma Mekanizması
 
  KURULUM YÖNERGELERİ
 
+ dikkat:bu işlemleri root kullanıcısıyla yapınız.
+
  git clone https://github.com/milisarge/lfs-mekanik.git lfs-mekanik 
  
  cd lfs-mekanik
