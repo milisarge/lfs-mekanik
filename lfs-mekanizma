@@ -231,11 +231,9 @@ parametre_analiz() {
 
 parametre_analiz "$@"
 
-#notlar
-#http://downloads.nutyx.org/files/patchs/openssh-server/service-saravane-01.patch  eksik bu indirmek gerek
+# KURULUM YÖNERGELERİ
 
-#yonergeler:
-
+# git clone https://github.com/milisarge/lfs-mekanik.git lfs-mekanik
 # cd lfs-mekanik
 # export LFS=/mnt/lfs
 
@@ -315,7 +313,7 @@ parametre_analiz "$@"
 
 # pisi paketçinin derlenmesi
 
-# derleme yapmak için ikincil ayarlar çalıştırılır.
+# paketçi derlenmesi yapmak için ikincil ayarlar çalıştırılır.
 
 # ./lfs-mekanizma -ia
 
@@ -341,7 +339,14 @@ parametre_analiz "$@"
 
 # cd /root/base/intltool && omps
 
-# daha sonra pisi-arge icindeki siralamadaki python modulleri kurulur.
+# daha sonra pisi-arge icindeki "siralama"daki python modulleri kurulur.aşağıdaki formda.
+
+# tar xf kaynak_kod
+# cd kymak_kod
+# python setup.py install
+
+#en son sistemi pisi kurulduktan sonra core klonlanır.
+#daha sonra işlemleri 32 bit de yaptıysanız etc/pisi/pisi.conf dosyasına gerekli ayarlar yapılır.
 
 
 
