@@ -3,7 +3,12 @@ Lfs Yönergeleri Doğrultusunda Dağıtım Oluşturma Mekanizması
 
  KURULUM YÖNERGELERİ
 
- dikkat:bu işlemleri root kullanıcısıyla yapınız.
+ dikkat:
+ 1-Bu işlemleri root kullanıcısıyla yapınız.
+ 
+ 2-wget,bsdtar komutlarının olduğundan emin olunuz.
+ 
+ -Mekanizmanın Kurulması
 
  git clone https://github.com/milisarge/lfs-mekanik.git lfs-mekanik 
  
