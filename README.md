@@ -1,119 +1,119 @@
 # lfs-mekanik
 Lfs Yönergeleri Doğrultusunda Dağıtım Oluşturma Mekanizması
 
-# KURULUM YÖNERGELERİ
+ KURULUM YÖNERGELERİ
 
-# git clone https://github.com/milisarge/lfs-mekanik.git lfs-mekanik
-# cd lfs-mekanik
-# export LFS=/mnt/lfs
+ git clone https://github.com/milisarge/lfs-mekanik.git lfs-mekanik
+ cd lfs-mekanik
+ export LFS=/mnt/lfs
 
-# gerekli kaynak kodların indirilmesi 
-# ./lfs-mekanizma -ki
+ gerekli kaynak kodların indirilmesi 
+ ./lfs-mekanizma -ki
 
-# birinci ayarlar yapılır.
-# ./lfs-mekanizma -ba
+ birinci ayarlar yapılır.
+ ./lfs-mekanizma -ba
 
-# lfs kullanıcısıyla oturum acılmış olur..
+ lfs kullanıcısıyla oturum acılmış olur..
 
-#chroot derlenmeye baslanır.
-# cd lfs-mekanik
-# ./lfs-mekanizma -cd
+chroot derlenmeye baslanır.
+ cd lfs-mekanik
+ ./lfs-mekanizma -cd
 
-# =======>  '/home/lfs/lfs-mekanik/chroot/cards/Pkgfile' derleme basarili 
-# yukarıdaki ifade goruldukten sonra exit komutu ile lfs kullanıcısından çıkılır.
+ =======>  '/home/lfs/lfs-mekanik/chroot/cards/Pkgfile' derleme basarili 
+ yukarıdaki ifade goruldukten sonra exit komutu ile lfs kullanıcısından çıkılır.
 
-#lfs tools uretici sistemin sıkıstırılması(yedeklemek için)
-# ./lfs-mekanizma -cs
+lfs tools uretici sistemin sıkıstırılması(yedeklemek için)
+ ./lfs-mekanizma -cs
 
-#üretici sistemin yedeklenmesinden sonra üretici sisteme girmek için gerekli ayarlar yapılır.
+üretici sistemin yedeklenmesinden sonra üretici sisteme girmek için gerekli ayarlar yapılır.
 
-# ./lfs-mekanizma -ia
+ ./lfs-mekanizma -ia
 
-# üretici sisteme girilir.
+ üretici sisteme girilir.
 
-# ./lfs-mekanizma -cg
+ ./lfs-mekanizma -cg
 
-# root [ / ]#   ekranına dusulur.
+ root [ / ]#   ekranına dusulur.
 
-#uretici sistem içersindeyken gerekli exportlar yapılır.
+uretici sistem içersindeyken gerekli exportlar yapılır.
 
-# export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/root/bin
-# export FORCE_UNSAFE_CONFIGURE=1
+ export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/root/bin
+ export FORCE_UNSAFE_CONFIGURE=1
 
-# cd /root/base 
+ cd /root/base 
 
-#base paket dizinine girilir.
+base paket dizinine girilir.
 
-# base_derle
+ base_derle
 
-# komutu verilip base sistemin kurulumu sağlanır.
+ komutu verilip base sistemin kurulumu sağlanır.
 
-# "bash chroot dışına çıkıp elle kurulmalıdır."  yazısı görülünce
-# "exit" ile chroot dışına çıkılır
+ "bash chroot dışına çıkıp elle kurulmalıdır."  yazısı görülünce
+ "exit" ile chroot dışına çıkılır
 
-# ./lfs-mekanizma -bk
+ ./lfs-mekanizma -bk
 
-# komutu verilir.işlem aşagıdaki şekilde sonlanmalıdır.
-# bash 4.3.30-3
-# bash.tr 4.3.30-3
+ komutu verilir.işlem aşagıdaki şekilde sonlanmalıdır.
+ bash 4.3.30-3
+ bash.tr 4.3.30-3
 
-# tekrar chroot içine girilir.ortam değişkenleri ayarlandıktan sonra,base derlenmeye devam edilir.
+ tekrar chroot içine girilir.ortam değişkenleri ayarlandıktan sonra,base derlenmeye devam edilir.
 
-# ./lfs-mekanizma -cg
-# export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/root/bin
-# export FORCE_UNSAFE_CONFIGURE=1
-# cd /root/base
-# base_derle 
+ ./lfs-mekanizma -cg
+ export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/root/bin
+ export FORCE_UNSAFE_CONFIGURE=1
+ cd /root/base
+ base_derle 
 
-# enson bu bilgi ile derleme bitmelidir.
-# =======> Installing 'ca-certificates1454658816x86_64.mps' succeeded.
-# =======> compress ca-certificates1454658816x86_64.mps
+ enson bu bilgi ile derleme bitmelidir.
+ =======> Installing 'ca-certificates1454658816x86_64.mps' succeeded.
+ =======> compress ca-certificates1454658816x86_64.mps
 
-# base paketlerin paket_depo altında toplanması
+ base paketlerin paket_depo altında toplanması
 
-# paketlerin arsivlenmesi
+ paketlerin arsivlenmesi
 
-# paketleri_arsivle
+ paketleri_arsivle
 
-# chroottan cıkılıp,base sistemin yedegi alınır.
+ chroottan cıkılıp,base sistemin yedegi alınır.
 
-# exit 
-# ./lfs-mekanizma -ui
-# ./lfs-mekanizma -bs
+ exit 
+ ./lfs-mekanizma -ui
+ ./lfs-mekanizma -bs
 
-# pisi paketçinin derlenmesi
+ pisi paketçinin derlenmesi
 
-# paketçi derlenmesi yapmak için ikincil ayarlar çalıştırılır.
+ paketçi derlenmesi yapmak için ikincil ayarlar çalıştırılır.
 
-# ./lfs-mekanizma -ia
+ ./lfs-mekanizma -ia
 
-# sisteme girmek için
+ sisteme girmek için
 
-# ./lfs-mekanizma -cg
+ ./lfs-mekanizma -cg
 
-# python derleme
+ python derleme
 
-# cd /root/base/python && omps
+ cd /root/base/python && omps
 
-# perl modulu XML-parser kurulumu
-# cpan shelline girilir
+ perl modulu XML-parser kurulumu
+ cpan shelline girilir
 
-# cpan
+ cpan
 
-# shellde bu komutla kurulur.sorular enterla geçilir.
+ shellde bu komutla kurulur.sorular enterla geçilir.
 
-# install XML::Parser
-# /usr/bin/make install  -- OK  ifadesini görülürse kurulum tamamdır.exit le shellden cıkılır.
+ install XML::Parser
+ /usr/bin/make install  -- OK  ifadesini görülürse kurulum tamamdır.exit le shellden cıkılır.
 
-# intltool kurulumu
+ intltool kurulumu
 
-# cd /root/base/intltool && omps
+ cd /root/base/intltool && omps
 
-# daha sonra pisi-arge icindeki "siralama"daki python modulleri kurulur.aşağıdaki formda.
+ daha sonra pisi-arge icindeki "siralama"daki python modulleri kurulur.aşağıdaki formda.
 
-# tar xf kaynak_kod
-# cd kymak_kod
-# python setup.py install
+ tar xf kaynak_kod
+ cd kymak_kod
+ python setup.py install
 
-#en son sistemi pisi kurulduktan sonra core klonlanır.
-#daha sonra işlemleri 32 bit de yaptıysanız etc/pisi/pisi.conf dosyasına gerekli ayarlar yapılır.
+en son sistemi pisi kurulduktan sonra core klonlanır.
+daha sonra işlemleri 32 bit de yaptıysanız etc/pisi/pisi.conf dosyasına gerekli ayarlar yapılır.
