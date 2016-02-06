@@ -19,7 +19,7 @@ chroot derlenmeye baslanır.
  cd lfs-mekanik
  ./lfs-mekanizma -cd
 
- =======>  '/home/lfs/lfs-mekanik/chroot/cards/Pkgfile' derleme basarili 
+ =======>  '/home/lfs/lfs-mekanik/chroot/cards/talimat' derleme basarili 
  yukarıdaki ifade goruldukten sonra exit komutu ile lfs kullanıcısından çıkılır.
 
 lfs tools uretici sistemin sıkıstırılması(yedeklemek için)
