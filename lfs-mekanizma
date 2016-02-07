@@ -178,6 +178,9 @@ parametre_analiz() {
 			-h|--help)
 				print_help
 				exit 0;;
+			-gk|--gerek-kontrol)
+				./bin/version-check.sh
+				exit 0;;
 			-ki|--kaynak-indir)
 				kaynak_kodlar_indir
 				exit 0;;

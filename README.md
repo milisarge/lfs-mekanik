@@ -9,11 +9,19 @@ Lfs Yönergeleri Doğrultusunda Dağıtım Oluşturma Mekanizması
  2-wget,bsdtar komutlarının olduğundan emin olunuz.
  
  -Mekanizmanın Kurulması
-
+ 
  git clone https://github.com/milisarge/lfs-mekanik.git lfs-mekanik 
  
  cd lfs-mekanik
  
+ ilk önce host sistemin gereksinimleri karşıladığının kontrol edilmesi
+ 
+ ./lfs-mekanizma -gk
+ 
+ yukarıdaki işlemin sonucuna göre gerekli gereksinimler yuklenir.
+
+ gereksinimler tamamlandıktan sonra gerekli ortam değişkeni ayarı yapılır.
+
  export LFS=/mnt/lfs
 
  gerekli kaynak kodların indirilmesi 
