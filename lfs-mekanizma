@@ -7,6 +7,7 @@ BASE_DERLEME_SIRASI="base.list"
 
 
 birinci_ayarlar(){
+		root_kontrol
 		lfs_kontrol
 		#lfs dizinin olusturulması
 		mkdir -p /mnt/lfs
@@ -60,6 +61,7 @@ chroot_derle(){
 }
 
 ikinci_ayarlar(){
+	root_kontrol
 	lfs_kontrol
 	unmount_islemi
 	mv /mnt/sources_depo /mnt/lfs/sources 
@@ -95,10 +97,11 @@ mount_islemi(){
 }
 
 chroot_gir(){
-lfs_kontrol
-unmount_islemi
-mount_islemi
-chroot "$LFS" /usr/bin/env -i HOME=/root TERM="$TERM" PS1='\u:\w\$ ' /bin/bash --login +h 
+	root_kontrol
+	lfs_kontrol
+	unmount_islemi
+	mount_islemi
+	chroot "$LFS" /usr/bin/env -i HOME=/root TERM="$TERM" PS1='\u:\w\$ ' /bin/bash --login +h 
 }
 
 
@@ -112,7 +115,7 @@ unmount_islemi() {
 }
 
 base_derle(){
- echo "yapim asamasında"
+ echo "bin içindeki kod"
 }
 
 bash_kur(){
@@ -149,6 +152,14 @@ lfs_kontrol(){
 		exit 1
 	fi
 }
+
+root_kontrol(){
+	if [ ! $(whoami) == "root" ]; then
+		echo "mekanizma işlemleri için root olmalısınız."
+		exit 1
+	fi
+}
+
 #calisma ortaminin klonlanmasi
 
 git_clone(){
