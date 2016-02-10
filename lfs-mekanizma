@@ -27,6 +27,7 @@ birinci_ayarlar(){
 		chmod -v a+wt $LFS/sources
 		chown -v lfs $LFS
 		cp -a ../$proje_dizin/* /home/lfs/
+		mkdir -p /home/lfs/chroot/.log
 		chown -R lfs:lfs /home/lfs/
 		cp ayarlar/.bashrc /home/lfs/
 		cp ayarlar/.bash_profile /home/lfs/
